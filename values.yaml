@@ -1,0 +1,2 @@
+buildkit:
+  image: "moby/buildkit:v0.13.2-rootless"
