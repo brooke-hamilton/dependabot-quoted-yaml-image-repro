@@ -40,4 +40,17 @@ YAML permits quoted string scalars. Quoting the complete image reference is vali
 
 ## Captured hosted failure
 
-This section will be updated after the GitHub-native Dependabot run for this repository completes. It will contain a concise excerpt from the actual hosted failure log, its UTC timestamp, and the public run/job link.
+The GitHub-native Dependabot job started on 2026-09-17 at 15:14:24 UTC and failed at 15:15:02 UTC. See the [failed run](https://github.com/brooke-hamilton/dependabot-quoted-yaml-image-repro/actions/runs/35238900439) and its [Dependabot job](https://github.com/brooke-hamilton/dependabot-quoted-yaml-image-repro/actions/runs/35238900439/job/105261938411).
+
+The following is a concise excerpt from the actual hosted job log, not expected output:
+
+```text
+2026/09/17 15:14:59 INFO Checking if moby/buildkit v0.13.2-rootless needs updating
+2026/09/17 15:15:01 INFO Latest version is v0.33.0-rootless
+2026/09/17 15:15:01 INFO Updating moby/buildkit from v0.13.2-rootless to v0.33.0-rootless
+2026/09/17 15:15:02 ERROR Error processing moby/buildkit (RuntimeError)
+2026/09/17 15:15:02 ERROR Expected content to change!
+2026/09/17 15:15:02 ERROR /home/dependabot/docker/lib/dependabot/shared/shared_file_updater.rb:146:in 'Dependabot::Shared::SharedFileUpdater#updated_yaml_content'
+```
+
+This demonstrates a parser/updater mismatch. The Docker dependency parser successfully reads the quoted scalar and identifies the current image and a newer tag. The updater's `update_image` matching expects the image reference immediately after `image:` and therefore does not match the opening quote in `image: "moby/buildkit:v0.13.2-rootless"`. No replacement occurs, and `updated_yaml_content` raises because the returned content is unchanged.
